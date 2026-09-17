@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rafter Framing Math Generator - Complete Worksheet</title>
+    <!-- External stylesheet reference for folder upload -->
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Fallback Inline Styles for Brightspace HTML Editor */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap');
+
+        :root {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.85);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            --primary-blue: #2563eb;
+            --primary-blue-hover: #1d4ed8;
+            --accent-cyan: #06b6d4;
+            --accent-amber: #f59e0b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --correct-bg: rgba(16, 185, 129, 0.15);
+            --correct-border: #10b981;
+            --correct-text: #34d399;
+            --incorrect-bg: rgba(239, 68, 68, 0.15);
+            --incorrect-border: #ef4444;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 24px 16px;
+            line-height: 1.5;
+        }
+
+        .rafter-app-container {
+            width: 100%;
+            max-width: 980px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .app-header {
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .app-title-group { display: flex; align-items: center; gap: 14px; }
+        .roof-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-cyan));
+            border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .roof-icon svg { width: 26px; height: 26px; fill: #ffffff; }
+        .app-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.65rem; font-weight: 700;
+            background: linear-gradient(90deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .app-subtitle { font-size: 0.875rem; color: var(--text-secondary); }
+
+        .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .parameters-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+        .section-header { margin-bottom: 14px; }
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem; font-weight: 600; color: var(--accent-cyan);
+        }
+        .parameters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+        .param-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem;
+        }
+        .param-sub-group {
+            grid-column: 1 / -1;
+            background: rgba(15, 23, 42, 0.9);
+            border-left: 3px solid var(--accent-amber);
+        }
+        .param-label { color: var(--text-secondary); }
+        .param-val { font-weight: 600; color: var(--text-primary); }
+        .highlight-slope {
+            color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.15);
+            padding: 2px 8px; border-radius: 4px;
+        }
+
+        .worksheet-section { display: flex; flex-direction: column; gap: 20px; }
+        .worksheet-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 8px; border-bottom: 1px solid var(--card-border);
+        }
+        .questions-grid-container { display: flex; flex-direction: column; gap: 16px; }
+
+        .question-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .question-header { display: flex; align-items: center; gap: 12px; }
+        .q-badge {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-cyan));
+            color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 700;
+            font-size: 0.85rem; padding: 4px 10px; border-radius: 6px;
+        }
+        .q-title { font-family: 'Outfit', sans-serif; font-size: 1.05rem; font-weight: 600; color: #ffffff; }
+
+        .triple-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px; width: 100%;
+        }
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        .input-label { font-size: 0.825rem; font-weight: 500; color: var(--text-secondary); }
+        .answer-field {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: 0.95rem; font-weight: 500; color: #ffffff;
+            outline: none;
+        }
+        .answer-field:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .score-summary-box { border-radius: var(--radius-md); padding: 18px 24px; text-align: center; }
+        .score-summary-box.hidden { display: none; }
+        .score-normal { background: rgba(37, 99, 235, 0.15); border: 1px solid var(--primary-blue); color: #93c5fd; }
+        .score-perfect { background: var(--correct-bg); border: 1px solid var(--correct-border); color: var(--correct-text); }
+        .score-title { font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 700; }
+        .score-subtitle { font-size: 0.9rem; margin-top: 4px; opacity: 0.9; }
+
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px;
+            font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600;
+            border-radius: var(--radius-sm); cursor: pointer; border: none;
+            transition: var(--transition-fast);
+        }
+        .btn-sm { padding: 6px 14px; font-size: 0.85rem; align-self: flex-start; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+        }
+
+        .feedback-box { border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 6px; }
+        .feedback-box.hidden { display: none; }
+        .feedback-correct { background: var(--correct-bg); border: 1px solid var(--correct-border); color: var(--correct-text); }
+        .feedback-incorrect { background: var(--incorrect-bg); border: 1px solid var(--incorrect-border); color: #fca5a5; }
+        .feedback-title { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .formula-note {
+            margin-top: 10px; background: rgba(15, 23, 42, 0.7);
+            border-left: 3px solid var(--accent-amber);
+            border-radius: var(--radius-sm); padding: 10px 12px; color: #e2e8f0;
+        }
+        .formula-header { font-weight: 600; color: var(--accent-amber); margin-bottom: 4px; font-size: 0.85rem; }
+        .formula-code { font-family: monospace; background: rgba(0, 0, 0, 0.3); padding: 4px 8px; border-radius: 4px; display: inline-block; color: #38bdf8; font-size: 0.85rem; }
+    </style>
+</head><body><div class="rafter-app-container"><!-- Header --><header class="app-header">
+<div class="app-title-group">
+<div class="roof-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 3.84L16.5 11H7.5L12 6.84zM7 18v-5h10v5H7z"></path>
+                </svg></div>
+<div>
+<h1 class="app-title">Rafter Framing Math Generator</h1>
+<p class="app-subtitle">Interactive Practice Worksheet for Carpentry &amp; Roof Framing Geometry</p>
+<p class="app-subtitle"><img src="Intersecting_20260916234929802.jpg" data-d2l-editor-default-img-style="true" style="max-width: 100%;"></p>
+</div>
+</div>
+<div class="header-actions"><button type="button" id="btn-check-all" class="btn btn-primary"> ✓ Check All 17 Answers </button> <button type="button" id="btn-generate-scenario" class="btn btn-secondary"> 🎲 Generate New Scenario </button></div>
+</header><!-- Parameters Display Area -->
+<section class="parameters-section">
+<div class="section-header">
+<h2 class="section-title"><span>📋</span> Building Specifications &amp; Generated Parameters</h2>
+</div>
+<div id="parameters-list" class="parameters-grid"><!-- Dynamic parameters injected by JavaScript --></div>
+</section>
+<!-- Score Summary Banner -->
+<div id="score-summary-banner" class="score-summary-box hidden"></div>
+<!-- All 17 Questions Worksheet List -->
+<section class="worksheet-section">
+<div class="worksheet-header">
+<h2 class="section-title"><span>📐</span> Roof Rafter Questions (1 to 17)</h2>
+</div>
+<div id="questions-list-container" class="questions-grid-container"><!-- All 17 question cards dynamically populated --></div>
+</section>
+</div>
+<!-- JavaScript modular reference and embedded engine fallback for Brightspace upload -->
+<p>
+<script src="js/app.js"></script>
+</p>
+<p><script>
+    // Embedded JS Engine Fallback (ensures 100% operational functionality in Brightspace single HTML upload)
+    if (typeof RafterApp === 'undefined') {
+        const RafterMath = {
+            randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; },
+            toTotalInches(feet, inches = 0) { return feet * 12 + inches; },
+            formatFeetInches(totalInches) {
+                if (totalInches == null || isNaN(totalInches)) return "0' 0\"";
+                const isNeg = totalInches < 0;
+                const absInc = Math.abs(totalInches);
+                let feet = Math.floor(absInc / 12);
+                let remInc = absInc % 12;
+                let wholeInches = Math.floor(remInc);
+                let frac = remInc - wholeInches;
+                let sixteenths = Math.round(frac * 16);
+                if (sixteenths === 16) { wholeInches += 1; sixteenths = 0; if (wholeInches === 12) { feet += 1; wholeInches = 0; } }
+                let fracStr = "";
+                if (sixteenths > 0) {
+                    let num = sixteenths, den = 16;
+                    const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+                    const div = gcd(num, den);
+                    fracStr = ` ${num/div}/${den/div}`;
+                }
+                const inchStr = (wholeInches === 0 && fracStr !== "") ? fracStr.trim() : `${wholeInches}${fracStr}`;
+                return `${isNeg ? '-' : ''}${feet}' ${inchStr}"`;
+            },
+            formatDecimalFeet(totalInches) { return (totalInches / 12).toFixed(3) + " ft"; },
+            formatDecimalInches(totalInches) { return totalInches.toFixed(2) + '"'; },
+            parseInputToInches(inputStr) {
+                if (!inputStr) return null;
+                let str = inputStr.trim().toLowerCase().replace(/ft|feet/g, "'").replace(/in|inch|inches/g, '"');
+                const ftInchRegex = /^(-?\d+)\s*(?:'|ft|-|\s)\s*(\d+)?(?:\s+(\d+)\/(\d+))?\s*"?$/;
+                const match = str.match(ftInchRegex);
+                if (match) {
+                    const feet = parseInt(match[1], 10) || 0;
+                    const inches = parseInt(match[2], 10) || 0;
+                    const num = parseInt(match[3], 10) || 0;
+                    const den = parseInt(match[4], 10) || 1;
+                    return (feet * 12) + inches + (num / den);
+                }
+                const cleanNum = str.replace(/[^0-9.-]/g, '');
+                const parsed = parseFloat(cleanNum);
+                return !isNaN(parsed) ? parsed : null;
+            }
+        };
+
+        window.RafterApp = {
+            params: {}, questionsList: [], questionStates: {},
+            generateParameters() {
+                const bFeet = RafterMath.randomInt(30, 64), bInches = RafterMath.randomInt(0, 11);
+                const buildingLengthInches = RafterMath.toTotalInches(bFeet, bInches);
+                let majFeet = RafterMath.randomInt(16, Math.min(40, bFeet - 1)), majInches = RafterMath.randomInt(0, 11);
+                let majorSpanInches = RafterMath.toTotalInches(majFeet, majInches);
+                if (majorSpanInches >= buildingLengthInches) majorSpanInches = buildingLengthInches - 12;
+                const maxMinFeet = Math.min(30, Math.floor(majorSpanInches / 12) - 1);
+                const minFeet = RafterMath.randomInt(12, Math.max(12, maxMinFeet));
+                let minorSpanInches = RafterMath.toTotalInches(minFeet, RafterMath.randomInt(0, 11));
+                if (minorSpanInches >= majorSpanInches) minorSpanInches = majorSpanInches - 12;
+                const maxOffsetInches = (buildingLengthInches - 60) - minorSpanInches - 1;
+                const minorOffsetInches = RafterMath.randomInt(12, Math.max(12, maxOffsetInches));
+                const minorProjectionInches = RafterMath.toTotalInches(RafterMath.randomInt(6, 12), RafterMath.randomInt(0, 11));
+                const slopes = [
+                    { rise: 4, run: 12, ratioText: "4/12 (or 1:3)" }, { rise: 5, run: 12, ratioText: "5/12" },
+                    { rise: 6, run: 12, ratioText: "6/12 (or 1:2)" }, { rise: 7, run: 12, ratioText: "7/12" },
+                    { rise: 8, run: 12, ratioText: "8/12 (or 2:3)" }, { rise: 9, run: 12, ratioText: "9/12 (or 3:4)" },
+                    { rise: 10, run: 12, ratioText: "10/12 (or 5:6)" }, { rise: 11, run: 12, ratioText: "11/12" },
+                    { rise: 12, run: 12, ratioText: "12/12 (or 1:1)" }
+                ];
+                const roofSlope = slopes[RafterMath.randomInt(0, slopes.length - 1)];
+                const ocSpacing = RafterMath.randomInt(0, 1) === 0 ? 16 : 24;
+                const possible = [];
+                for (let i = 9; i <= ocSpacing; i++) possible.push(i);
+                for (let i = possible.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [possible[i], possible[j]] = [possible[j], possible[i]]; }
+                const paramA = possible[0], paramB = possible[1], paramC = possible[2], paramD = possible[3];
+                const riseOverRun = roofSlope.rise / roofSlope.run;
+                const sgf90 = Math.sqrt(Math.pow(riseOverRun, 2) + 1), sgf45 = Math.sqrt(Math.pow(riseOverRun, 2) + 2);
+                this.params = { buildingLengthInches, majorSpanInches, minorOffsetInches, minorSpanInches, minorProjectionInches, roofSlope, ocSpacing, paramA, paramB, paramC, paramD, sgf90, sgf45 };
+                this.displayParameters();
+                this.questionsList = this.getQuestions();
+                this.renderAllQuestionsUI();
+            },
+            displayParameters() {
+                const p = this.params;
+                document.getElementById('parameters-list').innerHTML = `
+                    <div class="param-card"><span class="param-label">1. Building Length:</span> <span class="param-val">${RafterMath.formatFeetInches(p.buildingLengthInches)}</span></div>
+                    <div class="param-card"><span class="param-label">2. Major Span:</span> <span class="param-val">${RafterMath.formatFeetInches(p.majorSpanInches)}</span></div>
+                    <div class="param-card"><span class="param-label">3. Minor Offset from Corner:</span> <span class="param-val">${RafterMath.formatFeetInches(p.minorOffsetInches)}</span></div>
+                    <div class="param-card"><span class="param-label">4. Minor Span:</span> <span class="param-val">${RafterMath.formatFeetInches(p.minorSpanInches)}</span></div>
+                    <div class="param-card"><span class="param-label">5. Minor Wall Projection:</span> <span class="param-val">${RafterMath.formatFeetInches(p.minorProjectionInches)}</span></div>
+                    <div class="param-card"><span class="param-label">6. Roof Slope:</span> <span class="param-val highlight-slope">${p.roofSlope.ratioText}</span></div>
+                    <div class="param-card"><span class="param-label">7. On Center (O.C.) Spacing:</span> <span class="param-val">${p.ocSpacing}" O.C.</span></div>
+                    <div class="param-card param-sub-group"><span class="param-label">Parameters (A, B, C, D):</span> <span class="param-val">A = ${p.paramA}", B = ${p.paramB}", C = ${p.paramC}", D = ${p.paramD}"</span></div>
+                `;
+            },
+            getQuestions() {
+                const p = this.params;
+                return [
+                    { id: 1, title: "1. What is your 90 degree SGF?", type: "single", unitType: "factor", targetValue: p.sgf90, formula: "SGF (90°) = √((Rise / Run)² + 1)", explanation: `SGF (90°) = √((${p.roofSlope.rise}/${p.roofSlope.run})² + 1) = ${p.sgf90.toFixed(4)}` },
+                    { id: 2, title: "2. What is your 45 degree SGF?", type: "single", unitType: "factor", targetValue: p.sgf45, formula: "SGF (45°) = √((Rise / Run)² + 2)", explanation: `SGF (45°) = √((${p.roofSlope.rise}/${p.roofSlope.run})² + 2) = ${p.sgf45.toFixed(4)}` },
+                    { id: 3, title: "3. What is the Line Length of the Common Rafter on Major roof?", type: "single", unitType: "length_feet", targetInches: 0.5 * p.majorSpanInches * p.sgf90, formula: "Common Rafter Line Length = ½ × Major Span × 90° SGF", explanation: `Line Length = ½ × ${RafterMath.formatFeetInches(p.majorSpanInches)} × ${p.sgf90.toFixed(4)} = ${RafterMath.formatFeetInches(0.5 * p.majorSpanInches * p.sgf90)} (${(0.5 * p.majorSpanInches * p.sgf90 / 12).toFixed(3)} ft)` },
+                    { id: 4, title: "4. Major Hip Jack Common Difference", type: "single", unitType: "length_inches_or_feet", targetInches: p.ocSpacing * p.sgf90, formula: "Major Hip Jack Common Difference = On Center Spacing × 90° SGF", explanation: `Common Difference = ${p.ocSpacing}" × ${p.sgf90.toFixed(4)} = ${(p.ocSpacing * p.sgf90).toFixed(3)}" (${RafterMath.formatFeetInches(p.ocSpacing * p.sgf90)})` },
+                    { id: 5, title: "5. If laid out from corner, what would the 1st, 2nd, and 3rd Major Hip Jacks be?", type: "triple", unitType: "length_feet", targetInches1: 1 * p.ocSpacing * p.sgf90, targetInches2: 2 * p.ocSpacing * p.sgf90, targetInches3: 3 * p.ocSpacing * p.sgf90, formula: "Jack Length = N × Major Hip Jack Common Difference", explanation: `1st Jack = ${RafterMath.formatFeetInches(p.ocSpacing * p.sgf90)}\n2nd Jack = ${RafterMath.formatFeetInches(2 * p.ocSpacing * p.sgf90)}\n3rd Jack = ${RafterMath.formatFeetInches(3 * p.ocSpacing * p.sgf90)}` },
+                    { id: 6, title: `6. What would a jack be if it was Parameter A (${p.paramA}") from corner?`, type: "single", unitType: "length_inches_or_feet", targetInches: p.paramA * p.sgf90, formula: "Jack Line Length = Parameter A × 90° SGF", explanation: `Jack = ${p.paramA}" × ${p.sgf90.toFixed(4)} = ${(p.paramA * p.sgf90).toFixed(3)}" (${RafterMath.formatFeetInches(p.paramA * p.sgf90)})` },
+                    { id: 7, title: "7. What is the Major Hips Line Length?", type: "single", unitType: "length_feet", targetInches: 0.5 * p.majorSpanInches * p.sgf45, formula: "Major Hip Line Length = ½ × Major Span × 45° SGF", explanation: `Major Hip = ½ × ${RafterMath.formatFeetInches(p.majorSpanInches)} × ${p.sgf45.toFixed(4)} = ${RafterMath.formatFeetInches(0.5 * p.majorSpanInches * p.sgf45)} (${(0.5 * p.majorSpanInches * p.sgf45 / 12).toFixed(3)} ft)` },
+                    { id: 8, title: "8. What is the Supporting Valley Line Length?", type: "single", unitType: "length_feet", targetInches: 0.5 * p.majorSpanInches * p.sgf45, formula: "Supporting Valley Line Length = ½ × Major Span × 45° SGF", explanation: `Supporting Valley = ½ × ${RafterMath.formatFeetInches(p.majorSpanInches)} × ${p.sgf45.toFixed(4)} = ${RafterMath.formatFeetInches(0.5 * p.majorSpanInches * p.sgf45)} (${(0.5 * p.majorSpanInches * p.sgf45 / 12).toFixed(3)} ft)` },
+                    { id: 9, title: "9. What is the length of the Major Ridge?", type: "single", unitType: "length_feet", targetInches: p.buildingLengthInches - (0.5 * p.majorSpanInches), formula: "Major Ridge Length = Length of Building - (½ × Major Span)", explanation: `Major Ridge = ${RafterMath.formatFeetInches(p.buildingLengthInches)} - ${RafterMath.formatFeetInches(0.5 * p.majorSpanInches)} = ${RafterMath.formatFeetInches(p.buildingLengthInches - 0.5 * p.majorSpanInches)}` },
+                    { id: 10, title: "10. What is the Minor Ridge Length?", type: "single", unitType: "length_feet", targetInches: p.minorProjectionInches, formula: "Minor Ridge Length = Minor Wall Projection", explanation: `Minor Ridge = ${RafterMath.formatFeetInches(p.minorProjectionInches)}` },
+                    { id: 11, title: "11. What is the Minor Hip Line Length?", type: "single", unitType: "length_feet", targetInches: 0.5 * p.minorSpanInches * p.sgf45, formula: "Minor Hip Line Length = ½ × Minor Span × 45° SGF", explanation: `Minor Hip = ½ × ${RafterMath.formatFeetInches(p.minorSpanInches)} × ${p.sgf45.toFixed(4)} = ${RafterMath.formatFeetInches(0.5 * p.minorSpanInches * p.sgf45)}` },
+                    { id: 12, title: "12. What is the Supported Valley Line Length?", type: "single", unitType: "length_feet", targetInches: 0.5 * p.minorSpanInches * p.sgf45, formula: "Supported Valley Line Length = ½ × Minor Span × 45° SGF", explanation: `Supported Valley = ½ × ${RafterMath.formatFeetInches(p.minorSpanInches)} × ${p.sgf45.toFixed(4)} = ${RafterMath.formatFeetInches(0.5 * p.minorSpanInches * p.sgf45)}` },
+                    { id: 13, title: `13. What is the Valley Cripple Line Length (Param B = ${p.paramB}")?`, type: "single", unitType: "length_inches_or_feet", targetInches: p.paramB * p.sgf90, formula: "Valley Cripple Line Length = Parameter B × 90° SGF", explanation: `Valley Cripple = ${p.paramB}" × ${p.sgf90.toFixed(4)} = ${(p.paramB * p.sgf90).toFixed(3)}" (${RafterMath.formatFeetInches(p.paramB * p.sgf90)})` },
+                    { id: 14, title: `14. What is the Major Valley Jack Line Length (Param C = ${p.paramC}")?`, type: "single", unitType: "length_inches_or_feet", targetInches: p.paramC * p.sgf90, formula: "Major Valley Jack Line Length = Parameter C × 90° SGF", explanation: `Major Valley Jack = ${p.paramC}" × ${p.sgf90.toFixed(4)} = ${(p.paramC * p.sgf90).toFixed(3)}" (${RafterMath.formatFeetInches(p.paramC * p.sgf90)})` },
+                    { id: 15, title: "15. What is the Hip Valley Cripple Line Length?", type: "single", unitType: "length_feet", targetInches: p.minorOffsetInches * p.sgf90, formula: "Hip Valley Cripple Line Length = Offset of Minor from Corner × 90° SGF", explanation: `Hip Valley Cripple = ${RafterMath.formatFeetInches(p.minorOffsetInches)} × ${p.sgf90.toFixed(4)} = ${RafterMath.formatFeetInches(p.minorOffsetInches * p.sgf90)}` },
+                    { id: 16, title: `16. What is the Minor Valley Jack Line Length (Param D = ${p.paramD}")?`, type: "single", unitType: "length_inches_or_feet", targetInches: p.paramD * p.sgf90, formula: "Minor Valley Jack Line Length = Parameter D × 90° SGF", explanation: `Minor Valley Jack = ${p.paramD}" × ${p.sgf90.toFixed(4)} = ${(p.paramD * p.sgf90).toFixed(3)}" (${RafterMath.formatFeetInches(p.paramD * p.sgf90)})` },
+                    { id: 17, title: "17. What is the Pin Rafter Line Length on Minor roof?", type: "single", unitType: "length_feet", targetInches: 0.5 * p.minorSpanInches * p.sgf90, formula: "Pin Rafter Minor Roof = ½ × Minor Span × 90° SGF", explanation: `Pin Rafter = ½ × ${RafterMath.formatFeetInches(p.minorSpanInches)} × ${p.sgf90.toFixed(4)} = ${RafterMath.formatFeetInches(0.5 * p.minorSpanInches * p.sgf90)}` }
+                ];
+            },
+            renderAllQuestionsUI() {
+                const container = document.getElementById('questions-list-container');
+                if (!container) return;
+                container.innerHTML = '';
+                this.questionsList.forEach((q) => {
+                    const card = document.createElement('div');
+                    card.className = 'question-card';
+                    card.id = `q-card-${q.id}`;
+                    let inputHtml = '';
+                    if (q.type === 'single') {
+                        const placeholderText = q.unitType === 'factor' ? "e.g. 1.118 or 1.1180" : "e.g. 24' 6\", 24.5, or 294\"";
+                        const labelText = q.unitType === 'factor' ? "Answer (Decimal Factor):" : "Answer:";
+                        inputHtml = `<div class="input-group"><label for="input-q-${q.id}" class="input-label">${labelText}</label><input type="text" id="input-q-${q.id}" class="answer-field" placeholder="${placeholderText}" autocomplete="off" /></div>`;
+                    } else {
+                        inputHtml = `
+                            <div class="triple-input-grid">
+                                <div class="input-group"><label for="input-q-${q.id}-1" class="input-label">1st Rafter (1 in):</label><input type="text" id="input-q-${q.id}-1" class="answer-field" placeholder="e.g. 1' 6&quot; or 18&quot;" /></div>
+                                <div class="input-group"><label for="input-q-${q.id}-2" class="input-label">2nd Rafter (2 in):</label><input type="text" id="input-q-${q.id}-2" class="answer-field" placeholder="e.g. 3' 0&quot; or 36&quot;" /></div>
+                                <div class="input-group"><label for="input-q-${q.id}-3" class="input-label">3rd Rafter (3 in):</label><input type="text" id="input-q-${q.id}-3" class="answer-field" placeholder="e.g. 4' 6&quot; or 54&quot;" /></div>
+                            </div>
+                        `;
+                    }
+                    card.innerHTML = `
+                        <div class="question-header"><span class="q-badge">Q${q.id}</span><h3 class="q-title">${q.title}</h3></div>
+                        <div class="question-body">
+                            ${inputHtml}
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="RafterApp.checkQuestion(${q.id})">Check Q${q.id}</button>
+                            <div id="feedback-q-${q.id}" class="feedback-box hidden"></div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                const scoreBanner = document.getElementById('score-summary-banner');
+                if (scoreBanner) scoreBanner.className = 'score-summary-box hidden';
+            },
+            checkQuestion(qId) {
+                const q = this.questionsList.find(item => item.id === qId);
+                if (!q) return false;
+                const feedbackBox = document.getElementById(`feedback-q-${qId}`);
+                let isCorrect = false;
+                if (q.type === 'single') {
+                    const rawVal = document.getElementById(`input-q-${qId}`)?.value || '';
+                    if (q.unitType === 'factor') {
+                        const userVal = parseFloat(rawVal);
+                        if (!isNaN(userVal) && Math.abs(userVal - q.targetValue) < 0.006) isCorrect = true;
+                    } else {
+                        const parsedInches = RafterMath.parseInputToInches(rawVal);
+                        if (parsedInches !== null) {
+                            if (Math.abs(parsedInches - q.targetInches) <= 0.75 || Math.abs((parsedInches * 12) - q.targetInches) <= 0.75) isCorrect = true;
+                        }
+                    }
+                } else if (q.type === 'triple') {
+                    const v1 = RafterMath.parseInputToInches(document.getElementById(`input-q-${qId}-1`)?.value);
+                    const v2 = RafterMath.parseInputToInches(document.getElementById(`input-q-${qId}-2`)?.value);
+                    const v3 = RafterMath.parseInputToInches(document.getElementById(`input-q-${qId}-3`)?.value);
+                    const m1 = v1 !== null && (Math.abs(v1 - q.targetInches1) <= 0.75 || Math.abs((v1 * 12) - q.targetInches1) <= 0.75);
+                    const m2 = v2 !== null && (Math.abs(v2 - q.targetInches2) <= 0.75 || Math.abs((v2 * 12) - q.targetInches2) <= 0.75);
+                    const m3 = v3 !== null && (Math.abs(v3 - q.targetInches3) <= 0.75 || Math.abs((v3 * 12) - q.targetInches3) <= 0.75);
+                    if (m1 && m2 && m3) isCorrect = true;
+                }
+
+                if (isCorrect) {
+                    feedbackBox.className = 'feedback-box feedback-correct';
+                    feedbackBox.innerHTML = `<div class="feedback-title">✓ Correct!</div><div class="feedback-body">Great job! Your framing calculation is accurate.</div>`;
+                } else {
+                    feedbackBox.className = 'feedback-box feedback-incorrect';
+                    let answerSummary = '';
+                    if (q.type === 'single') {
+                        answerSummary = q.unitType === 'factor' ? `<strong>Correct Answer:</strong> ${q.targetValue.toFixed(4)}` : `<strong>Correct Answer:</strong> ${RafterMath.formatFeetInches(q.targetInches)} (${RafterMath.formatDecimalFeet(q.targetInches)})`;
+                    } else {
+                        answerSummary = `<strong>Correct Answers:</strong><br>• 1st: ${RafterMath.formatFeetInches(q.targetInches1)}<br>• 2nd: ${RafterMath.formatFeetInches(q.targetInches2)}<br>• 3rd: ${RafterMath.formatFeetInches(q.targetInches3)}`;
+                    }
+                    feedbackBox.innerHTML = `
+                        <div class="feedback-title">✗ Incorrect</div>
+                        <div class="feedback-body">
+                            <p>${answerSummary}</p>
+                            <div class="formula-note">
+                                <div class="formula-header">📐 Framing Formula & Solution Steps:</div>
+                                <div class="formula-code">${q.formula}</div>
+                                <div class="formula-explanation">${q.explanation.replace(/\n/g, '<br>')}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                return isCorrect;
+            },
+            checkAllAnswers() {
+                let numCorrect = 0, total = this.questionsList.length;
+                this.questionsList.forEach(q => { if (this.checkQuestion(q.id)) numCorrect++; });
+                const pct = Math.round((numCorrect / total) * 100);
+                const scoreBanner = document.getElementById('score-summary-banner');
+                if (scoreBanner) {
+                    scoreBanner.className = `score-summary-box ${numCorrect === total ? 'score-perfect' : 'score-normal'}`;
+                    scoreBanner.innerHTML = `<div class="score-title">Worksheet Result: ${numCorrect} / ${total} Correct (${pct}%)</div><div class="score-subtitle">${numCorrect === total ? '🎉 Perfect Score!' : 'Review step-by-step formula solutions for any incorrect answers above.'}</div>`;
+                }
+            },
+            init() {
+                this.generateParameters();
+                document.getElementById('btn-generate-scenario')?.addEventListener('click', () => this.generateParameters());
+                document.getElementById('btn-check-all')?.addEventListener('click', () => this.checkAllAnswers());
+            }
+        };
+        document.addEventListener('DOMContentLoaded', () => window.RafterApp.init());
+    }
+</script></p></body></html>
