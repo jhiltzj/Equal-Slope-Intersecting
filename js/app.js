@@ -347,9 +347,9 @@ const RafterApp = {
                 title: `13. What is the Valley Cripple Line Length (Parameter B = ${p.paramB}")?`,
                 type: "single",
                 unitType: "length_inches_or_feet",
-                targetInches: p.paramB * p.sgf90,
-                formula: `Valley Cripple Line Length = Parameter B × 90° SGF`,
-                explanation: `Parameter B = ${p.paramB}"\nValley Cripple = ${p.paramB}" × ${p.sgf90.toFixed(4)} = ${(p.paramB * p.sgf90).toFixed(3)}" (${RafterMath.formatFeetInches(p.paramB * p.sgf90)})`
+                targetInches: p.paramB * 2 * p.sgf90,
+                formula: `Valley Cripple = Param B × 2 × 90° SGF`,
+                explanation: `Valley Cripple = ${p.paramB}" × 2 × ${p.sgf90.toFixed(4)} = ${(p.paramB * 2 * p.sgf90).toFixed(3)}" (${RafterMath.formatFeetInches(p.paramB * 2 * p.sgf90)})`
             },
             // Q14
             {
@@ -384,7 +384,7 @@ const RafterApp = {
             // Q17
             {
                 id: 17,
-                title: "17. What is the Pin Rafter Line Length on Minor roof?",
+                title: "17. What is the Pin Rafter (King Common) Line Length on Minor roof?",
                 type: "single",
                 unitType: "length_feet",
                 targetInches: 0.5 * p.minorSpanInches * p.sgf90,
